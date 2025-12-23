@@ -1,4 +1,4 @@
-package com.taotao.drools.mock.a.model;
+package com.taotao.drools.mock.b.model;
 
 public class Order {
     private double amount;

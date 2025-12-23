@@ -1,6 +1,6 @@
 spring:
   application:
-    name: DroolsMockA
+    name: DroolsMockB
 logging:
   level:
     root: info

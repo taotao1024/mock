@@ -1,6 +1,6 @@
 //订单积分规则
 package com.taotao
-import com.taotao.drools.mock.a.model.Order
+import com.taotao.drools.mock.b.model.Order
 
 //规则一：100元以下 不加分
 rule "order_rule_1"

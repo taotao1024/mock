@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.taotao</groupId>
-    <artifactId>drools-mock-a</artifactId>
+    <artifactId>drools-mock-b</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

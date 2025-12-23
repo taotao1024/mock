@@ -1,4 +1,4 @@
-package com.taotao.drools.mock.a.config;
+package com.taotao.drools.mock.b.config;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.*;

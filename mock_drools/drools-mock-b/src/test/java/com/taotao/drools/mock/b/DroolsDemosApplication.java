@@ -1,6 +1,6 @@
-package com.taotao.drools.mock.a;
+package com.taotao.drools.mock.b;
 
-import com.taotao.drools.mock.a.model.Order;
+import com.taotao.drools.mock.b.model.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.KieContainer;
