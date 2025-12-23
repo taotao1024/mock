@@ -1,0 +1,28 @@
+// 规则包名（逻辑分组）
+package com.taotao.rules
+
+// 导入数据对象
+import com.taotao.drools.mock.a.model.Order;
+import com.taotao.drools.mock.a.model.User;
+
+// 规则1：满100减20
+rule "满100减20"
+    when
+        // 匹配条件：订单金额≥100
+        $order : Order(amount >= 100)
+    then
+        // 执行动作：设置折扣为20元
+        $order.setDiscount(20.0);
+        System.out.println("[Drools] 触发满减规则！");
+end
+
+// 规则2：VIP用户额外折扣（扩展案例）
+rule "VIP用户额外减10"
+    when
+        $order : Order(amount >= 100, discount == 20.0)
+        // 假设User对象中包含isVip字段
+        User(isVip() == true)
+    then
+        $order.setDiscount($order.getDiscount() + 10.0);
+        System.out.println("[Drools] VIP用户额外减10元！");
+end
