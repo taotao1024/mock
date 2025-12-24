@@ -11,6 +11,7 @@
 
     <modules>
         <module>spring-ai-framework</module>
+        <module>spring-ai-graph</module>
     </modules>
 
     <properties>

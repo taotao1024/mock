@@ -184,3 +184,78 @@ Spring AI Alibaba 的 ReactAgent.Builder 通过 **outputSchema** 和 **outputTyp
  - outputType(Class<?> type): 提供 Java 类 - 使用 BeanOutputConverter 自动转换为 JSON schema（推荐方式，类型安全）
  - 不指定: 返回非结构化的自然语言响应
  - 推荐做法：使用 BeanOutputConverter 生成 schema，既保证了类型安全，又实现了自动 schema 生成，代码更易维护。
+
+# 上下文工程 [ContextEngineeringExample](spring-ai-framework/src/main/java/com/taotao/ai/examples/documentation/framework/advanced/ContextEngineeringExample.java)
+上下文工程是以正确的格式提供正确的信息和工具，使 LLM 能够完成任务。这是 AI 工程师的首要工作。缺乏"正确"的上下文是更可靠 Agent 的头号障碍，Spring AI Alibaba 的 Agent 抽象专门设计用于优化上下文工程。
+
+## 上下文
+### 上下文类型
+| 上下文类型   | 你控制的内容                         | 瞬态或持久 |
+|---------|--------------------------------|-------|
+| 模型上下文   | 模型调用中包含什么（指令、消息历史、工具、响应格式）     | 瞬态    
+| 工具上下文   | 工具可以访问和产生什么（对状态、存储、运行时上下文的读/写） | 持久    
+| 生命周期上下文 | 模型和工具调用之间发生什么（摘要、防护栏、日志等）      | 持久    
+
+ - **瞬态上下文**。LLM 在单次调用中看到的内容。你可以修改消息、工具或提示，而不改变状态中保存的内容。
+ - **持久上下文**。跨轮次保存在状态中的内容。生命周期钩子和工具写入会永久修改它。
+
+### 数据源
+| 数据源       | 别名   | 范围   | 示例                         | 
+|-----------|------|------|----------------------------|
+| 运行时上下文    | 静态配置 | 会话范围 | 用户 ID、API 密钥、数据库连接、权限、环境设置 |
+| 状态（State） | 短期记忆 | 会话范围 | 当前消息、上传的文件、认证状态、工具结果       |
+| 存储（Store） | 长期记忆 | 跨会话  | 用户偏好、提取的见解、记忆、历史数据         |
+
+### 工作原理
+在 Spring AI Alibaba 中，Hook和Interceptor是实现上下文工程的机制。
+
+它们允许你挂接到 Agent 生命周期的任何步骤并：
+- 更新上下文
+- 跳转到 Agent 生命周期的不同步骤
+
+## Model Context（型上下文）
+### 系统提示
+### 消息历史
+### 工具
+### 模型选择
+### 响应格式
+
+## Tool Context（工具上下文）
+### 工具中访问状态
+### 工具中修改状态
+
+## 模型上下文
+### 使用 Hook 在 Agent 生命周期的不同阶段执行操作。
+
+# 人工介入（Human-in-the-Loop）[HumanInTheLoopExample](spring-ai-framework/src/main/java/com/taotao/ai/examples/documentation/framework/advanced/HumanInTheLoopExample.java)
+人工介入（HITL）Hook 允许你为 Agent 工具调用添加人工监督。当模型提出需要审查的操作时——例如写入文件或执行 SQL——Hook 可以暂停执行并等待人工决策。
+
+**人工决策决定接下来发生什么**
+- 操作可以被原样批准（approve）
+- 修改后运行（edit）
+- 拒绝并提供反馈（reject）。
+
+配置中断
+响应中断
+Workflow 中嵌套 Agent 的人工中断
+
+# 记忆管理（Memory）
+
+# 多智能体（Multi-agent）
+Spring AI Alibaba支持以下Multi-agent模式：
+
+| 模式           | 工作原理                                                                 | 控制流                           | 使用场景         |
+|--------------|----------------------------------------------------------------------|-------------------------------|--------------|
+| Tool Calling | **Supervisor Agent将其他Agent作为工具调用。** "工具"Agent不直接与用户对话——它们只执行任务并返回结果。 | 集中式：所有路由都通过调用Agent。           | 任务编排、结构化工作流。 |
+| Handoffs     | 当前的Agent决定将控制权转移给另一个Agent。活动Agent随之变更，用户可以继续与新的Agent直接交互。            | 去中心化：Agent可以改变当前由谁来担当活跃Agent。 | 跨领域对话、专家接管。  |
+
+## Instruction 占位符
+
+
+## 交接（Handoffs）
+### 顺序执行（Sequential Agent）
+### 并行执行（Parallel Agent）
+### 路由（LlmRoutingAgent）
+### 监督者（SupervisorAgent）
+### 自定义（Customized）
+### 混合模式示例
