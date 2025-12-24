@@ -130,3 +130,57 @@ Tool Calling（也称为 function calling）是 AI 应用程序中的常见模�
 ## Tools 主要用于：
  - **信息检索** : 此类别中的 tools 可用于从外部源检索信息，例如数据库、Web 服务、文件系统或 Web 搜索引擎。目标是增强 model 的知识，使其能够回答原本无法回答的问题。因此，它们可以在 Retrieval Augmented Generation (RAG) 场景中使用。例如，可以使用 tool 检索给定位置的当前天气、检索最新新闻文章或查询数据库中的特定记录。
  - **执行操作** : 此类别中的 tools 可用于在软件系统中执行操作，例如发送电子邮件、在数据库中创建新记录、提交表单或触发工作流。目标是自动化原本需要人工干预或显式编程的任务。例如，可以使用 tool 为与聊天机器人交互的客户预订航班、填写网页上的表单，或在代码生成场景中基于自动化测试（TDD）实现 Java 类。
+
+# Memory 短期记忆
+默认情况下，Agent 使用状态通过 messages 键管理短期记忆，特别是对话历史。
+你可以通过在工具或 Hook  中访问和修改状态来扩展记忆功能。
+
+## **常见模式**
+
+启用短期记忆后，长对话可能超过 LLM 的上下文窗口。常见的解决方案包括：
+- 修剪消息。在调用 LLM 之前移除前 N 条或后 N 条消息
+- 删除消息。从 Graph 状态中永久删除消息
+- 总结消息。总结历史中较早的消息并用摘要替换它们
+- 自定义策略。自定义策略（例如消息过滤等）
+
+# Messages 消息
+Messages 是 Spring AI Alibaba 中模型交互的基本单元。它们代表模型的输入和输出，携带在与 LLM 交互时表示对话状态所需的内容和元数据。
+
+### Messages 是包含以下内容的对象：
+- Role（角色） - 标识消息类型（如 **system、user、assistant**）
+- Content（内容） - 表示消息的实际内容（如文本、图像、音频、文档等）
+- Metadata（元数据） - 可选字段，如响应信息、消息 ID 和 token 使用情况
+
+### 消息类型
+- System Message（系统消息） - 告诉模型如何行为并为交互提供上下文
+- User Message（用户消息） - 表示用户输入和与模型的交互
+- Assistant Message（助手消息） - 模型生成的响应，包括文本内容、工具调用和元数据
+- Tool Response Message（工具响应消息） - 表示工具调用的输出
+
+### 多模态内容
+多模态性指的是处理不同形式数据的能力，如文本、音频、图像和视频。
+
+Spring AI Alibaba 包含这些数据的标准类型，可以跨提供商使用。
+
+# Models 模型
+![Model-API.png](images/Model-API.png)
+
+### ChatOptions
+常用选项说明：
+- model: 要使用的模型 ID
+- frequencyPenalty: 频率惩罚（-2.0 到 2.0），降低重复令牌的可能性
+- maxTokens: 生成响应的最大令牌数
+- presencePenalty: 存在惩罚（-2.0 到 2.0），鼓励谈论新主题
+- stopSequences: 停止序列列表，遇到时停止生成
+- temperature: 采样温度（0.0 到 2.0），控制随机性
+- topK: Top-K 采样参数
+- topP: Top-P（核采样）参数
+
+# Structured Output 结构化输出
+Spring AI Alibaba 的 ReactAgent.Builder 通过 **outputSchema** 和 **outputType** 方法处理结构化输出。
+
+### Spring AI Alibaba 支持两种方式控制结构化输出：
+ - outputSchema(String schema): 提供 JSON schema 字符串。推荐使用 BeanOutputConverter 从 Java 类自动生成 schema，也可以手动提供自定义的 schema 字符串
+ - outputType(Class<?> type): 提供 Java 类 - 使用 BeanOutputConverter 自动转换为 JSON schema（推荐方式，类型安全）
+ - 不指定: 返回非结构化的自然语言响应
+ - 推荐做法：使用 BeanOutputConverter 生成 schema，既保证了类型安全，又实现了自动 schema 生成，代码更易维护。
